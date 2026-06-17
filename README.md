@@ -17,7 +17,7 @@ A real-time delivery monitoring and management system built with Next.js, React,
    - Updates reflected instantly without page refresh or UI freezing
    - Statuses: Pending, In Transit, Delivered, Exception
 
-3. **Exception Handling**
+3. **Status Handling(Exception)**
    - Exception rows highlighted with red left border
    - "Intervene" button appears only for Exception status deliveries
    - Opens modal with delivery details and action buttons
