@@ -22,7 +22,6 @@ export function DeliveryRowList({
 }: DeliveryRowListProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // call the hook, but conditionally reference its variables
   const { parentRef, virtualItems, paddingTop, totalSize } = useVirtualizerHook(
     {
       items: deliveries,
@@ -42,12 +41,11 @@ export function DeliveryRowList({
   return (
     <div
       ref={enableVirtualization ? parentRef : containerRef}
-      className={`overflow-y-auto block ${maxHeight}`}
+      className={`overflow-y-auto w-full block ${maxHeight}`}
       style={{ position: "relative" }}
     >
       <div
-        className="w-full"
-        // If virtualization is off, remove the fixed total height box
+        className="w-full min-w-full"
         style={
           enableVirtualization
             ? { height: `${totalSize}px`, position: "relative" }
@@ -55,15 +53,20 @@ export function DeliveryRowList({
         }
       >
         <div
+          className="w-full min-w-full flex flex-col"
           style={
             enableVirtualization
-              ? { transform: `translateY(${paddingTop}px)` }
+              ? {
+                  transform: `translateY(${paddingTop}px)`,
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                }
               : undefined
           }
         >
           {enableVirtualization
-            ? // 2. Virtualized Render Path
-              virtualItems.map((vi) => {
+            ? virtualItems.map((vi) => {
                 const delivery = deliveries[vi.index];
                 if (!delivery) return null;
 
@@ -76,8 +79,7 @@ export function DeliveryRowList({
                   />
                 );
               })
-            : // Standard Non-Virtualized Render Path (Fallback)
-              deliveries.map((delivery, index) => (
+            : deliveries.map((delivery, index) => (
                 <DeliveryRow
                   key={`standard-${index}-${delivery.id}`}
                   delivery={delivery}

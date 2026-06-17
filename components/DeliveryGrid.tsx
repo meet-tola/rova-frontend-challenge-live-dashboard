@@ -52,10 +52,10 @@ export function DeliveryGrid({ onIntervene }: DeliveryGridProps) {
 
   return (
     <div className="bg-white rounded-lg border border-slate-200 overflow-hidden flex flex-col">
-      <div className="overflow-x-auto w-full">
-        <div className="w-full min-w-212.5">
+      <div className="overflow-x-auto overflow-y-hidden w-full">
+        <div className="min-w-232.5 w-full flex flex-col">
           {/* Table Header */}
-          <div className="grid grid-cols-[150px_1fr_180px_150px_150px_150px] gap-0 bg-slate-50 border-b border-slate-200 sticky top-0 z-10">
+          <div className="grid grid-cols-[150px_1fr_180px_150px_150px_150px] items-center bg-slate-50 border-b border-slate-200 sticky top-0 z-10">
             <div className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
               Delivery ID
             </div>
@@ -76,7 +76,6 @@ export function DeliveryGrid({ onIntervene }: DeliveryGridProps) {
             </div>
           </div>
 
-          {/* Change Virtualization by changing enableVirtualization boolean */}
           <DeliveryRowList
             deliveries={filteredDeliveries}
             onIntervene={onIntervene}
