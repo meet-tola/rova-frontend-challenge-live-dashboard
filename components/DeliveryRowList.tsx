@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useRef } from 'react';
-import { useVirtualizerHook } from '@/hooks/useVirtualizer';
-import { DeliveryRow } from './DeliveryRow';
-import { Delivery, UserRole } from '@/store/useDeliveryStore';
+import { useRef } from "react";
+import { useVirtualizerHook } from "@/hooks/useVirtualizer";
+import { DeliveryRow } from "./DeliveryRow";
+import { Delivery, UserRole } from "@/store/useDeliveryStore";
 
 interface DeliveryRowListProps {
   deliveries: Delivery[];
@@ -17,17 +17,19 @@ export function DeliveryRowList({
   deliveries,
   onIntervene,
   userRole,
-  maxHeight = 'max-h-[500px]',
+  maxHeight = "max-h-[500px]",
   enableVirtualization = true,
 }: DeliveryRowListProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Pass items securely to the virtualizer hook
-  const { parentRef, virtualItems, paddingTop, totalSize } = useVirtualizerHook({
-    items: deliveries,
-    overscan: 5,
-    estimateSize: 53, 
-  });
+  // call the hook, but conditionally reference its variables
+  const { parentRef, virtualItems, paddingTop, totalSize } = useVirtualizerHook(
+    {
+      items: deliveries,
+      overscan: 5,
+      estimateSize: 53,
+    },
+  );
 
   if (deliveries.length === 0) {
     return (
@@ -41,26 +43,49 @@ export function DeliveryRowList({
     <div
       ref={enableVirtualization ? parentRef : containerRef}
       className={`overflow-y-auto block ${maxHeight}`}
-      style={{ position: 'relative' }}
+      style={{ position: "relative" }}
     >
-      <div className="w-full" style={{ height: `${totalSize}px`, position: 'relative' }}>
-        
-        <div style={{ transform: `translateY(${paddingTop}px)` }}>
-          {virtualItems.map((vi) => {
-            const delivery = deliveries[vi.index];
-            if (!delivery) return null;
+      <div
+        className="w-full"
+        // If virtualization is off, remove the fixed total height box
+        style={
+          enableVirtualization
+            ? { height: `${totalSize}px`, position: "relative" }
+            : undefined
+        }
+      >
+        <div
+          style={
+            enableVirtualization
+              ? { transform: `translateY(${paddingTop}px)` }
+              : undefined
+          }
+        >
+          {enableVirtualization
+            ? // 2. Virtualized Render Path
+              virtualItems.map((vi) => {
+                const delivery = deliveries[vi.index];
+                if (!delivery) return null;
 
-            return (
-              <DeliveryRow
-                key={`virtual-${vi.index}-${delivery.id}`}
-                delivery={delivery}
-                userRole={userRole}
-                onIntervene={onIntervene}
-              />
-            );
-          })}
+                return (
+                  <DeliveryRow
+                    key={`virtual-${vi.index}-${delivery.id}`}
+                    delivery={delivery}
+                    userRole={userRole}
+                    onIntervene={onIntervene}
+                  />
+                );
+              })
+            : // Standard Non-Virtualized Render Path (Fallback)
+              deliveries.map((delivery, index) => (
+                <DeliveryRow
+                  key={`standard-${index}-${delivery.id}`}
+                  delivery={delivery}
+                  userRole={userRole}
+                  onIntervene={onIntervene}
+                />
+              ))}
         </div>
-
       </div>
     </div>
   );

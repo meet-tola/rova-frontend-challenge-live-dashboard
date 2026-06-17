@@ -42,7 +42,7 @@ export const DeliveryRow = memo(function DeliveryRow({ delivery, userRole = 'Adm
         {delivery.status === 'Exception' && userRole === 'Admin' ? (
           <button
             onClick={() => onIntervene?.(delivery)}
-            className="inline-flex items-center gap-2 px-2 py-0.5 bg-red-600 hover:bg-red-700 text-white text-xs font-medium rounded-lg transition-colors cursor-pointer"
+            className="inline-flex items-center gap-2 px-2 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-medium rounded-lg transition-colors cursor-pointer"
           >
             <AlertCircle className="w-4 h-4" />
             Intervene

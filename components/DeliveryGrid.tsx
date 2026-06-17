@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useMemo } from 'react';
-import { useDeliveryStore, Delivery } from '@/store/useDeliveryStore';
-import { DeliveryRowList } from './DeliveryRowList';
-import { Loader2 } from 'lucide-react';
+import { useMemo } from "react";
+import { useDeliveryStore, Delivery } from "@/store/useDeliveryStore";
+import { DeliveryRowList } from "./DeliveryRowList";
+import { Loader2 } from "lucide-react";
 
 interface DeliveryGridProps {
   onIntervene: (delivery: Delivery) => void;
@@ -17,13 +17,16 @@ export function DeliveryGrid({ onIntervene }: DeliveryGridProps) {
 
   const filteredDeliveries = useMemo(() => {
     if (deliveries.length === 0) return [];
-    
+
     return deliveries.filter((delivery) => {
-      const statusMatch = filters.status === 'All' || delivery.status === filters.status;
+      const statusMatch =
+        filters.status === "All" || delivery.status === filters.status;
       const searchMatch =
-        filters.searchTerm === '' ||
+        filters.searchTerm === "" ||
         delivery.id.toLowerCase().includes(filters.searchTerm.toLowerCase()) ||
-        delivery.driverName.toLowerCase().includes(filters.searchTerm.toLowerCase());
+        delivery.driverName
+          .toLowerCase()
+          .includes(filters.searchTerm.toLowerCase());
       return statusMatch && searchMatch;
     });
   }, [deliveries, filters]);
@@ -51,25 +54,36 @@ export function DeliveryGrid({ onIntervene }: DeliveryGridProps) {
     <div className="bg-white rounded-lg border border-slate-200 overflow-hidden flex flex-col">
       <div className="overflow-x-auto w-full">
         <div className="w-full min-w-212.5">
-          
           {/* Table Header */}
           <div className="grid grid-cols-[150px_1fr_180px_150px_150px_150px] gap-0 bg-slate-50 border-b border-slate-200 sticky top-0 z-10">
-            <div className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">Delivery ID</div>
-            <div className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">Client</div>
-            <div className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">Driver</div>
-            <div className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">Status</div>
-            <div className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">ETA</div>
-            <div className="px-6 py-4 text-right text-xs font-semibold text-slate-700 uppercase tracking-wider">Action</div>
+            <div className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
+              Delivery ID
+            </div>
+            <div className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
+              Client
+            </div>
+            <div className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
+              Driver
+            </div>
+            <div className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
+              Status
+            </div>
+            <div className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
+              ETA
+            </div>
+            <div className="px-6 py-4 text-right text-xs font-semibold text-slate-700 uppercase tracking-wider">
+              Action
+            </div>
           </div>
 
+          {/* Change Virtualization by changing enableVirtualization boolean */}
           <DeliveryRowList
             deliveries={filteredDeliveries}
             onIntervene={onIntervene}
             userRole={userRole}
             maxHeight="max-h-[500px]"
-            enableVirtualization={true}
+            enableVirtualization={false}
           />
-
         </div>
       </div>
 
