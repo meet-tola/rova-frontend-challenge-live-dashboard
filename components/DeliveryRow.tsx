@@ -1,11 +1,12 @@
 'use client';
 
 import { memo } from 'react';
-import { Delivery } from '@/store/useDeliveryStore';
+import { Delivery, UserRole } from '@/store/useDeliveryStore';
 import { AlertCircle } from 'lucide-react';
 
 interface DeliveryRowProps {
   delivery: Delivery;
+  userRole?: UserRole; // <-- Added userRole prop definition
   onIntervene?: (delivery: Delivery) => void;
 }
 
@@ -23,7 +24,7 @@ const rowColors = {
   Exception: 'hover:bg-red-50 border-l-4 border-red-500',
 };
 
-export const DeliveryRow = memo(function DeliveryRow({ delivery, onIntervene }: DeliveryRowProps) {
+export const DeliveryRow = memo(function DeliveryRow({ delivery, userRole = 'Admin', onIntervene }: DeliveryRowProps) {
   const eta = new Date(delivery.eta);
 
   return (
@@ -38,7 +39,7 @@ export const DeliveryRow = memo(function DeliveryRow({ delivery, onIntervene }: 
       </div>
       <div className="px-6 py-4 text-sm text-slate-600">{eta.toLocaleDateString()}</div>
       <div className="px-6 py-4 text-sm flex justify-end">
-        {delivery.status === 'Exception' ? (
+        {delivery.status === 'Exception' && userRole === 'Admin' ? (
           <button
             onClick={() => onIntervene?.(delivery)}
             className="inline-flex items-center gap-2 px-2 py-0.5 bg-red-600 hover:bg-red-700 text-white text-xs font-medium rounded-lg transition-colors cursor-pointer"

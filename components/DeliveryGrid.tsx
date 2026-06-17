@@ -13,6 +13,7 @@ export function DeliveryGrid({ onIntervene }: DeliveryGridProps) {
   const isLoading = useDeliveryStore((state) => state.isLoading);
   const deliveries = useDeliveryStore((state) => state.deliveries);
   const filters = useDeliveryStore((state) => state.filters);
+  const userRole = useDeliveryStore((state) => state.filters.userRole);
 
   const filteredDeliveries = useMemo(() => {
     if (deliveries.length === 0) return [];
@@ -67,6 +68,7 @@ export function DeliveryGrid({ onIntervene }: DeliveryGridProps) {
               <DeliveryRow
                 key={delivery.id}
                 delivery={delivery}
+                userRole={userRole} 
                 onIntervene={onIntervene}
               />
             ))}

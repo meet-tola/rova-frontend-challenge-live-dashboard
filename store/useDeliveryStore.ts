@@ -2,7 +2,7 @@
 import { create } from 'zustand';
 
 export type DeliveryStatus = 'Pending' | 'In Transit' | 'Delivered' | 'Exception';
-export type UserRole = 'Admin' | 'Manager' | 'Driver' | 'Dispatcher';
+export type UserRole = 'Admin' | 'Viewer';
 
 export interface Delivery {
   id: string;
@@ -22,8 +22,7 @@ interface DeliveryStore {
   filters: {
     status: DeliveryStatus | 'All';
     searchTerm: string;
-    // TODO: Role-based filtering
-    // userRole: UserRole;
+    userRole: UserRole;
   };
   isLoading: boolean;
   isSimulating: boolean;
@@ -33,7 +32,7 @@ interface DeliveryStore {
   generateMockDeliveries: () => void;
   setFilterStatus: (status: DeliveryStatus | 'All') => void;
   setSearchTerm: (term: string) => void;
-  // TODO: setUserRole: (role: UserRole) => void;
+  setUserRole: (role: UserRole) => void;
   updateDeliveryStatus: (id: string, status: DeliveryStatus) => void;
   startSimulation: () => void;
   stopSimulation: () => void;
@@ -72,6 +71,7 @@ export const useDeliveryStore = create<DeliveryStore>((set, get) => {
     filters: {
       status: 'All',
       searchTerm: '',
+      userRole: 'Admin',
     },
     isLoading: false,
     isSimulating: false,
@@ -137,26 +137,17 @@ export const useDeliveryStore = create<DeliveryStore>((set, get) => {
       }));
     },
 
-    // TODO: Implement role-based filtering
-    // setUserRole: (role) => {
-    //   set((state) => ({
-    //     filters: {
-    //       ...state.filters,
-    //       userRole: role,
-    //     },
-    //   }));
-    // },
-    //
-    // Role-based access logic:
-    // - Admin: Can see all deliveries
-    // - Manager: Can see all deliveries
-    // - Dispatcher: Can see all deliveries and intervene
-    // - Driver: Can only see their own deliveries (filter by driverName matching session user)
-    // 
-    // Additional permission rules:
-    // - Only Dispatcher/Manager/Admin can use Intervene function
-    // - Only Admin can reassign drivers
-    // - Driver can only update their own delivery status
+    // Implement role-based filtering
+    setUserRole: (role) => {
+      set((state) => ({
+        filters: {
+          ...state.filters,
+          userRole: role,
+        },
+      }));
+    },
+    
+
 
     updateDeliveryStatus: (id, status) => {
       set((state) => ({
