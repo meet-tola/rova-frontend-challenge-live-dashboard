@@ -6,7 +6,7 @@ import { AlertCircle } from 'lucide-react';
 
 interface DeliveryRowProps {
   delivery: Delivery;
-  userRole?: UserRole; // <-- Added userRole prop definition
+  userRole?: UserRole; 
   onIntervene?: (delivery: Delivery) => void;
 }
 

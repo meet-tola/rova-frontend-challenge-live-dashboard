@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 import { useDeliveryStore, Delivery } from '@/store/useDeliveryStore';
-import { DeliveryRow } from './DeliveryRow';
+import { DeliveryRowList } from './DeliveryRowList'; // <-- Imported unified row list orchestrator
 import { Loader2 } from 'lucide-react';
 
 interface DeliveryGridProps {
@@ -62,17 +62,13 @@ export function DeliveryGrid({ onIntervene }: DeliveryGridProps) {
             <div className="px-6 py-4 text-right text-xs font-semibold text-slate-700 uppercase tracking-wider">Action</div>
           </div>
 
-          {/* Table Body */}
-          <div className="overflow-y-auto max-h-125">
-            {filteredDeliveries.map((delivery) => (
-              <DeliveryRow
-                key={delivery.id}
-                delivery={delivery}
-                userRole={userRole} 
-                onIntervene={onIntervene}
-              />
-            ))}
-          </div>
+          <DeliveryRowList
+            deliveries={filteredDeliveries}
+            onIntervene={onIntervene}
+            userRole={userRole}
+            maxHeight="max-h-[500px]"
+            enableVirtualization={true}
+          />
 
         </div>
       </div>
