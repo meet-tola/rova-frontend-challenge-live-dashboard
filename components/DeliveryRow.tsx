@@ -28,7 +28,7 @@ export const DeliveryRow = memo(function DeliveryRow({ delivery, userRole = 'Adm
   const eta = new Date(delivery.eta);
 
   return (
-    <div className={`grid grid-cols-[120px_1fr_180px_150px_150px_150px] gap-0 border-b border-slate-200 transition-colors ${rowColors[delivery.status]}`}>
+    <div className={`grid grid-cols-[150px_1fr_180px_150px_150px_150px] gap-0 border-b border-slate-200 transition-colors ${rowColors[delivery.status]}`}>
       <div className="px-6 py-4 text-sm font-medium text-slate-900">{delivery.id}</div>
       <div className="px-6 py-4 text-sm text-slate-600">{delivery.clientName}</div>
       <div className="px-6 py-4 text-sm text-slate-600">{delivery.driverName}</div>
