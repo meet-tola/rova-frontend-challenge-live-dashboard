@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 import { useDeliveryStore, Delivery } from '@/store/useDeliveryStore';
-import { DeliveryRowList } from './DeliveryRowList'; // <-- Imported unified row list orchestrator
+import { DeliveryRowList } from './DeliveryRowList';
 import { Loader2 } from 'lucide-react';
 
 interface DeliveryGridProps {
