@@ -42,7 +42,6 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
     router.push("/auth/login");
   };
 
-  // Base navigation configuration mapping
   const allNavItems = useMemo(() => [
     { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard, adminOnly: true },
     { label: "Deliveries", href: "/dashboard/deliveries", icon: Truck, adminOnly: false },
@@ -56,7 +55,6 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
     { label: "Account", href: "/dashboard/account", icon: UserCircle },
   ], []);
 
-  // Filter main core tabs based on the logged-in user's role status safely
   const visibleNavItems = useMemo(() => {
     if (!isHydrated || !user) {
       return allNavItems.filter((item) => !item.adminOnly);
@@ -82,7 +80,7 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
     <>
       {/* Top Navbar */}
       <div
-        className={`fixed top-0 h-16 bg-white border-b border-gray-200 z-40 transition-all duration-300 left-0 right-0 ${
+        className={`fixed top-0 h-16 bg-white border-b border-gray-200 z-30 transition-all duration-300 left-0 right-0 ${
           isCollapsed ? "lg:left-20" : "lg:left-64"
         }`}
       >
@@ -124,13 +122,33 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
         />
       )}
 
-      {/* Mobile Sidebar drawer overlay drawer */}
+      {/* Mobile Sidebar drawer layout */}
       <aside
-        className={`fixed lg:hidden left-0 top-16 h-[calc(100vh-4rem)] w-64 bg-white border-r border-gray-200 z-45 transform transition-transform duration-300 flex flex-col justify-between overflow-y-auto ${
+        className={`fixed lg:hidden left-0 top-0 h-screen w-64 bg-white border-r border-gray-200 z-50 transform transition-transform duration-300 flex flex-col justify-between overflow-y-auto ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         <div className="py-4 px-3 flex-1 space-y-6">
+          {/* Header Identity with Close Button inside the Mobile Drawer */}
+          <div className="flex items-center justify-between px-2 pb-2 border-b border-gray-100">
+            <div className="flex items-center gap-2">
+              <Image
+                src="/favicon.svg"
+                alt="RySwift Logo"
+                width={28}
+                height={28}
+                className="shrink-0"
+              />
+              <h1 className="font-bold text-purple-600 text-lg tracking-tight">RySwift</h1>
+            </div>
+            <button 
+              onClick={() => setIsOpen(false)}
+              className="p-1 hover:bg-gray-100 rounded-md"
+            >
+              <X className="w-5 h-5 text-gray-500" />
+            </button>
+          </div>
+
           {/* Main Workspace Cluster */}
           <nav className="space-y-1.5">
             {visibleNavItems.map((item) => {
@@ -226,7 +244,6 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
 
         {/* Content scrolling navigational list groups */}
         <div className="flex-1 overflow-y-auto py-6 px-3 space-y-6 scrollbar-thin">
-          
           {/* Main Primary Scope Nav links */}
           <nav className="space-y-1">
             {visibleNavItems.map((item) => {
