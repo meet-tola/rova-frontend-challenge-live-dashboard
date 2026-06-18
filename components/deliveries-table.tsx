@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useMemo } from "react";
 import { Delivery } from "@/lib/mockApi";
 import { useAuthStore } from "@/stores/authStore";
 import { Button } from "@/components/ui/button";
@@ -21,6 +20,10 @@ interface DeliveriesTableProps {
   onViewDetails: (delivery: Delivery) => void;
   onIntervene?: (delivery: Delivery) => void;
   isLoading: boolean;
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
+  statusFilter: string;
+  setStatusFilter: (status: string) => void;
 }
 
 export function DeliveriesTable({
@@ -31,62 +34,34 @@ export function DeliveriesTable({
   onViewDetails,
   onIntervene,
   isLoading,
+  searchQuery,
+  setSearchQuery,
+  statusFilter,
+  setStatusFilter,
 }: DeliveriesTableProps) {
   const { user } = useAuthStore();
 
-  // Local state for searching and filtering
-  const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "delivered":
-        return "bg-green-100 text-green-800";
-      case "in_transit":
-        return "bg-blue-100 text-blue-800";
-      case "scheduled":
-        return "bg-yellow-100 text-yellow-800";
-      case "exception":
-        return "bg-red-100 text-red-800";
-      case "pending":
-        return "bg-orange-100 text-orange-800";
-      default:
-        return "bg-gray-100 text-gray-800";
+      case "delivered": return "bg-green-100 text-green-800";
+      case "in_transit": return "bg-blue-100 text-blue-800";
+      case "scheduled": return "bg-yellow-100 text-yellow-800";
+      case "exception": return "bg-red-100 text-red-800";
+      case "pending": return "bg-orange-100 text-orange-800";
+      default: return "bg-gray-100 text-gray-800";
     }
   };
 
   const formatETA = (etaString: string) => {
     try {
-      const date = new Date(etaString);
-      return date.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
+      return new Date(etaString).toLocaleDateString("en-US", {
+        month: "short", day: "numeric", hour: "2-digit", minute: "2-digit",
       });
-    } catch {
-      return etaString;
-    }
+    } catch { return etaString; }
   };
 
-  // Filter and search logic computed client-side
-  const filteredDeliveries = useMemo(() => {
-    return deliveries.filter((delivery) => {
-      // Status Filter match
-      const matchesStatus =
-        statusFilter === "all" || delivery.status === statusFilter;
-
-      // Search query match (Delivery ID / Tracking Number or Driver Name)
-      const cleanQuery = searchQuery.toLowerCase().trim();
-      const matchesSearch =
-        cleanQuery === "" ||
-        delivery.id.toString().toLowerCase().includes(cleanQuery) ||
-        delivery.trackingNumber.toLowerCase().includes(cleanQuery) ||
-        delivery.driver.toLowerCase().includes(cleanQuery);
-
-      return matchesStatus && matchesSearch;
-    });
-  }, [deliveries, searchQuery, statusFilter]);
+  // Switch occurrences of `filteredDeliveries` to `deliveries` in your code!
+  const filteredDeliveries = deliveries; 
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden">
