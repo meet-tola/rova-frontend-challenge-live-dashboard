@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useRouter } from 'next/navigation';
-import { useAuthStore } from '@/stores/authStore';
-import { Button } from '@/components/ui/button';
-import { AlertTriangle } from 'lucide-react';
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/stores/authStore";
+import { Button } from "@/components/ui/button";
+import { AlertTriangle } from "lucide-react";
 
 interface SessionWarningModalProps {
   isOpen: boolean;
@@ -23,7 +23,7 @@ export function SessionWarningModal({
 
   const handleLogout = () => {
     logout();
-    router.push('/auth/login');
+    router.push("/auth/login");
   };
 
   return (
@@ -35,27 +35,30 @@ export function SessionWarningModal({
         </div>
 
         <p className="text-gray-700">
-          You have been inactive for 3 minutes. Your session will expire in{' '}
-          <span className="font-bold text-orange-600">{countdownSeconds}</span>{' '}
+          You have been inactive for 3 minutes. Your session will expire in{" "}
+          <span className="font-bold text-orange-600">{countdownSeconds}</span>{" "}
           seconds.
         </p>
 
         <p className="text-sm text-gray-600">
-          Click &quot;Continue&quot; to stay logged in or you will be automatically logged out.
+          Click &quot;Continue&quot; to stay logged in or you will be
+          automatically logged out.
         </p>
 
-        <div className="flex gap-3">
-          <Button
-            onClick={handleLogout}
-            className="flex-1 bg-red-600 hover:bg-red-700 text-white"
-          >
-            Logout
-          </Button>
+        <div className="flex flex-col sm:flex-row gap-3 pt-2">
           <Button
             onClick={onContinue}
-            className="flex-1 bg-purple-600 hover:bg-purple-700 text-white"
+            className="w-full sm:flex-1 bg-purple-600 hover:bg-purple-700 text-white font-medium text-sm py-3 min-h-11.5 rounded-lg flex items-center justify-center transition-colors order-1 sm:order-2"
           >
             Continue
+          </Button>
+
+          <Button
+            onClick={handleLogout}
+            variant="outline"
+            className="w-full sm:flex-1 border-gray-200 hover:bg-red-50 text-red-600 hover:text-red-700 text-sm py-3 min-h-11.5 rounded-lg flex items-center justify-center font-medium transition-colors order-2 sm:order-1"
+          >
+            Logout
           </Button>
         </div>
 
