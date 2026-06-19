@@ -75,8 +75,8 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
 
   const secondaryNavItems = useMemo(
     () => [
-      { label: "Support", href: "/dashboard/support", icon: LifeBuoy },
-      { label: "Account", href: "/dashboard/account", icon: UserCircle },
+      { label: "Support", href: null, icon: LifeBuoy },
+      { label: "Account", href: null, icon: UserCircle },
     ],
     [],
   );
