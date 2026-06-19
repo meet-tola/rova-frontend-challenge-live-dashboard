@@ -2,177 +2,208 @@
 
 A real-time delivery monitoring and management system built with **Next.js**, **React**, **Tailwind CSS**, **TanStack Query**, **Zustand**, and **shadcn/ui**.
 
----
-
 ## Overview
 
-The Live Dispatch Dashboard provides logistics teams with a centralized interface for monitoring active deliveries, managing delivery exceptions, and performing role-based interventions in real time.
+The Live Dispatch Dashboard provides logistics teams with a centralized interface for monitoring active deliveries, tracking delivery status changes, and managing delivery exceptions in real time.
 
-The application is designed to handle delivery datasets efficiently while maintaining a responsive user experience through caching, background synchronization, and optimized state management.
+The application is designed to handle large delivery datasets efficiently while maintaining a responsive user experience through optimized state management, background synchronization, and role-based access control.
 
 ---
 
-## Features
+# Features
 
-### 1. Active Delivery Grid with Pagination
+## 1. Active Delivery Grid
 
-* Displays **500+ deliveries** fetched from a live API endpoint.
-* Shows key delivery information:
+The dashboard provides a responsive and performant delivery management interface.
+
+### Capabilities
+
+* Displays 500+ delivery records
+* Shows:
 
   * Delivery ID
   * Client Name
   * Driver Name
   * Status
   * ETA
-* Built with a responsive table/grid layout.
-* Pagination support for smooth navigation through large datasets.
-* Powered by **TanStack Query** for:
+* Responsive table layout
+* Pagination support for large datasets
+* Powered by TanStack Query for efficient data management
 
-  * Server-state caching
-  * Background updates
-  * Efficient pagination management
+### Filtering & Search
+
+Users can quickly locate deliveries using:
+
+* Status Filter
+
+  * Pending
+  * In Transit
+  * Delivered
+  * Exception
+
+* Search By
+
+  * Delivery ID
+  * Driver Name
 
 ---
 
-### 2. Auto-Refresh Data Management
+## 2. Real-Time Status Simulation
 
-The dashboard continuously refreshes delivery data to provide a real-time operational experience.
+To simulate live logistics operations without a real-time backend, the application includes a client-side update service.
 
-#### Capabilities
+### Simulation Behavior
 
-* Automatic polling using TanStack Query.
-* Seamless background data synchronization.
-* No page reloads or UI interruptions.
-* Simulates live logistics operations through MockAPI.
+Every 5 seconds:
 
-#### Supported Delivery Statuses
+* Randomly selects 1–3 deliveries
+* Applies valid status transitions
+* Updates application state
+* Instantly reflects changes in the UI
+
+### Supported Statuses
 
 * Pending
 * In Transit
 * Delivered
 * Exception
 
+This approach emulates WebSocket-style updates while remaining fully client-side.
+
 ---
 
-### 3. Status Handling & Intervention
+## 3. Exception Handling & Intervention
 
-#### Exception Detection
+### Exception Detection
 
-Deliveries marked as **Exception** are visually highlighted with:
+Deliveries marked as **Exception** are visually highlighted for quick identification.
 
-* Red left border indicators
-* Elevated visibility for operational review
+### Available Actions
 
-#### Delivery Actions
+All Users:
 
-Available for all users:
+* View Delivery Details
 
-* View Details
-
-Available only for authorized users:
+Admin Users:
 
 * Re-assign Driver
 * Cancel Delivery
 
-Intervention actions are executed through a dedicated modal workflow.
+### Intervention Workflow
+
+When an exception delivery is selected:
+
+1. An intervention modal opens
+2. The user selects an action
+3. A confirmation notification is displayed
+4. The modal closes automatically
 
 ---
 
-### 4. Role-Based Access Control (RBAC)
+## 4. Role-Based Access Control (RBAC)
 
-RBAC is managed through a centralized Zustand store.
+User permissions are managed through a centralized Zustand store.
 
-#### Authentication Flow
+### Roles
 
-Users are routed to:
+#### Admin
 
-```text
-/app/auth/login
-```
+Can:
 
-to select their operational role.
+* View all deliveries
+* Access dashboard metrics
+* View delivery details
+* Re-assign drivers
+* Cancel deliveries
 
-#### Roles
+#### Viewer
 
-##### Admin
+Can:
 
-Full access to:
+* View dashboard data
+* View delivery details
+* Monitor delivery statuses
 
-* Delivery monitoring
-* Dashboard metrics
-* Delivery details
-* Driver reassignment
-* Delivery cancellation
+Cannot:
 
-##### Viewer
-
-Read-only access to:
-
-* Dashboard overview
-* Delivery details
-* Delivery status monitoring
-
-Viewers cannot execute intervention actions.
+* Perform intervention actions
 
 ---
 
 # Technology Stack
 
-| Category         | Technology              |
-| ---------------- | ----------------------- |
-| Framework        | Next.js 16 (App Router) |
-| UI Library       | React                   |
-| Styling          | Tailwind CSS v4         |
-| State Management | Zustand                 |
-| Server State     | TanStack Query          |
-| Components       | shadcn/ui               |
-| Icons            | Lucide React            |
-| Notifications    | Sonner                  |
+| Category         | Technology           |
+| ---------------- | -------------------- |
+| Framework        | Next.js (App Router) |
+| UI Library       | React                |
+| Styling          | Tailwind CSS         |
+| State Management | Zustand              |
+| Server State     | TanStack Query       |
+| Components       | shadcn/ui            |
+| Icons            | Lucide React         |
+| Notifications    | Sonner               |
+| Language         | TypeScript           |
 
 ---
 
-# Project Architecture
+# State Management Strategy
 
-## Component Structure
+## Why Zustand?
 
-### Core Components
+Zustand was chosen for client-side state management because it is lightweight, requires minimal boilerplate, and provides efficient subscriptions with minimal re-renders.
 
-| Component              | Purpose                            |
-| ---------------------- | ---------------------------------- |
-| deliveries-table       | Main delivery grid with pagination |
-| delivery-details-modal | Delivery information viewer        |
-| intervene-action-modal | Admin intervention workflow        |
-| session-warning-modal  | Session lifecycle management       |
-| sidebar                | Dashboard navigation               |
-| providers              | Global application providers       |
+It manages:
+
+* Authentication state
+* User roles
+* Access control permissions
+
+Since these concerns are shared across multiple components but change infrequently, Zustand provides a simple and scalable solution.
 
 ---
 
-## Folder Structure
+## Why TanStack Query?
+
+Delivery data is server state rather than client state.
+
+TanStack Query was selected because it provides:
+
+* Automatic caching
+* Background refetching
+* Request deduplication
+* Loading and error handling
+* Query synchronization
+
+This allows the dashboard to remain responsive while handling frequent delivery updates.
+
+---
+
+## Separation of Concerns
+
+| Responsibility         | Solution       |
+| ---------------------- | -------------- |
+| Authentication & Roles | Zustand        |
+| Delivery Data          | TanStack Query |
+
+Separating client state from server state keeps the application maintainable and reduces unnecessary complexity.
+
+---
+
+# Project Structure
 
 ```text
 ├── app/
 │   ├── auth/
 │   │   └── login/
-│   │       └── page.tsx
 │   ├── dashboard/
-│   │   └── page.tsx
-│   ├── favicon.ico
-│   ├── globals.css
-│   ├── layout.tsx
-│   └── page.tsx
+│   └── layout.tsx
 │
 ├── components/
-│   ├── ui/
-│   │   ├── button.tsx
-│   │   └── input.tsx
-│   │
 │   ├── deliveries-table.tsx
 │   ├── delivery-details-modal.tsx
 │   ├── intervene-action-modal.tsx
-│   ├── providers.tsx
-│   ├── session-warning-modal.tsx
-│   └── sidebar.tsx
+│   ├── sidebar.tsx
+│   └── providers.tsx
 │
 ├── hooks/
 │   ├── useAuth.ts
@@ -186,101 +217,23 @@ Viewers cannot execute intervention actions.
 
 ---
 
-# State Management Strategy
-
-## Zustand (`useAuth`)
-
-Used exclusively for client-side global state.
-Responsibilities:
-* User authentication state
-* Role management
-* Access control permissions
-
----
-
-## TanStack Query (`useDeliveries`)
-
-Used for server-state management.
-Responsibilities:
-* Fetching delivery data
-* Caching API responses
-* Background synchronization
-* Auto-refetching
-* Pagination support
-* Mutation handling
-
----
-
-## Data Flow
-
-1. **Login Page**
-   - Role selection handled in `app/auth/login`
-   - User selects a role (Admin / Driver) from the login screen
-
-2. **Dashboard Routing**
-   - After authentication, user is redirected to `app/dashboard`
-
-3. **Data Fetching Layer**
-   - `useDeliveries` hook initializes data fetching logic
-
-4. **API + Fallback Layer**
-   - Attempts to fetch deliveries from MockAPI
-   - If API fails or returns insufficient data:
-     - Generates 500 synthetic delivery records
-
-5. **Query Cache**
-   - TanStack Query manages caching and synchronization of server state
-
-6. **Processing Layer**
-   - Applies:
-     - Role-based filtering
-     - Status filtering
-     - Search logic
-     - Pagination
-
-7. **UI Rendering Layer**
-   - Processed data is rendered in the dashboard table/grid
-   - Background updates keep data fresh without page reloads
-
----
-
 # API Integration
 
-## Delivery Endpoint
+Delivery data is sourced from:
 
 ```text
 https://6a31b0c57bc5e1c612661564.mockapi.io/api/v1/deliveries
 ```
 
-### Implementation
+### Resilience Strategy
 
-Located in:
-
-```text
-lib/mockApi.ts
-```
-
-### Query Hooks
-
-```text
-hooks/useDeliveries.ts
-hooks/useIntervene.ts
-```
-
-### Resilience Layer
-
-If the API:
-* Becomes unavailable
-* Hits rate limits
-* Returns invalid responses
-
-the application automatically generates a standardized set of **500 fallback delivery records** to maintain dashboard functionality and prevent UI failures.
+If the API becomes unavailable, returns invalid data, or provides insufficient records, the application automatically generates 500 fallback delivery records to ensure uninterrupted dashboard functionality.
 
 ---
 
 # Installation
 
-## Clone Repository
+## Clone the Repository
 
 ```bash
 git clone <repository-url>
@@ -299,7 +252,7 @@ npm install
 npm run dev
 ```
 
-## Open Application
+## Open the Application
 
 ```text
 http://localhost:3000
@@ -307,97 +260,22 @@ http://localhost:3000
 
 ---
 
-# Testing the Dashboard
+# Future Improvements(2weeks)
 
-## 1. Authentication Route
+Given additional development time, the following enhancements would be prioritized:
 
-1. Launch the application.
-2. You will be redirected to:
-
-```text
-/app/auth/login
-```
-
-3. Select one of the available roles:
-   * Admin
-   * Viewer
-
----
-
-## 2. Review Paginated Grid
-
-Navigate through the delivery table and verify:
-* Stable pagination
-* Responsive performance
-* Consistent rendering across large datasets
-
----
-
-## 3. Verify Real-Time Updates
-
-Observe the dashboard while data refreshes automatically.
-
-Expected behavior:
-* No page refreshes
-* No loading interruptions
-* Updated delivery information appears seamlessly
-* Change of status, to show expection status
-
----
-
-## 4. Test Interventions
-
-### Admin User
-
-1. Locate an Exception delivery.
-2. Open the intervention modal.
-3. Perform:
-   * Driver reassignment
-   * Delivery cancellation
-
-### Viewer User
-
-Verify that:
-* Delivery details remain accessible.
-* Intervention controls are hidden or disabled.
-
----
-
-# Design Principles
-
-### Scalability
-
-Supports large delivery datasets without degrading user experience.
-
-### Separation of Concerns
-
-Clear distinction between:
-* Client state (Zustand)
-* Server state (TanStack Query)
-
-### Resilience
-
-Fallback data generation ensures dashboard availability during API failures.
-
-### Real-Time Experience
-
-Background polling keeps operational data synchronized without disrupting user workflows.
-
----
-
-# Future Improvements (2+ Weeks)
-
-* Search and advanced filtering
-* Delivery analytics dashboard
+* Advanced multi-criteria filtering
 * WebSocket-based live updates
+* Delivery analytics dashboard
 * Audit logging for interventions
 * Driver performance metrics
-* Admin, Manager, and Viewer roles with different permissions
+* Additional user roles (Manager, Dispatcher, etc.)
 * Notification center
-* Export to CSV and PDF
+* CSV/PDF export functionality
+* Grid virtualization for very large datasets
 
 ---
 
 ## License
 
-This project is provided for assessment and demonstration.
+This project was created as part of a frontend engineering assessment and is intended for demonstration purposes.
