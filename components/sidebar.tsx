@@ -42,18 +42,44 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
     router.push("/auth/login");
   };
 
-  const allNavItems = useMemo(() => [
-    { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard, adminOnly: true },
-    { label: "Deliveries", href: "/dashboard/deliveries", icon: Truck, adminOnly: false },
-    { label: "Drivers", href: "/dashboard/drivers", icon: Users, adminOnly: true },
-    { label: "Customers", href: "/dashboard/customers", icon: UserSquare2, adminOnly: true },
-    { label: "Billing & Invoice", href: "/dashboard/billing", icon: Receipt, adminOnly: true },
-  ], []);
+  const allNavItems = useMemo(
+    () => [
+      {
+        label: "Dashboard",
+        href: "/dashboard",
+        icon: LayoutDashboard,
+        adminOnly: true,
+      },
+      {
+        label: "Deliveries",
+        href: "/dashboard/deliveries",
+        icon: Truck,
+        adminOnly: false,
+      },
+      {
+        label: "Drivers",
+        href: "/dashboard/drivers",
+        icon: Users,
+        adminOnly: true,
+      },
+      { label: "Customers", href: null, icon: UserSquare2, adminOnly: true },
+      {
+        label: "Billing & Invoice",
+        href: null,
+        icon: Receipt,
+        adminOnly: true,
+      },
+    ],
+    [],
+  );
 
-  const secondaryNavItems = useMemo(() => [
-    { label: "Support", href: "/dashboard/support", icon: LifeBuoy },
-    { label: "Account", href: "/dashboard/account", icon: UserCircle },
-  ], []);
+  const secondaryNavItems = useMemo(
+    () => [
+      { label: "Support", href: "/dashboard/support", icon: LifeBuoy },
+      { label: "Account", href: "/dashboard/account", icon: UserCircle },
+    ],
+    [],
+  );
 
   const visibleNavItems = useMemo(() => {
     if (!isHydrated || !user) {
@@ -63,7 +89,8 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
     return allNavItems.filter((item) => !item.adminOnly || isAdmin);
   }, [allNavItems, user, isHydrated]);
 
-  const isActive = (href: string) => {
+  const isActive = (href: string | null) => {
+    if (!href) return false;
     if (href === "/dashboard") return pathname === href;
     return pathname.startsWith(href);
   };
@@ -89,7 +116,11 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
             onClick={() => setIsOpen(!isOpen)}
             className="lg:hidden p-2 hover:bg-gray-50 rounded-lg min-w-10 min-h-10 flex items-center justify-center transition-colors"
           >
-            {isOpen ? <X className="w-6 h-6 text-gray-700" /> : <Menu className="w-6 h-6 text-gray-700" />}
+            {isOpen ? (
+              <X className="w-6 h-6 text-gray-700" />
+            ) : (
+              <Menu className="w-6 h-6 text-gray-700" />
+            )}
           </button>
 
           <h1 className="text-lg font-bold text-purple-600 lg:hidden absolute left-1/2 -translate-x-1/2">
@@ -139,9 +170,11 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
                 height={28}
                 className="shrink-0"
               />
-              <h1 className="font-bold text-purple-600 text-lg tracking-tight">RySwift</h1>
+              <h1 className="font-bold text-purple-600 text-lg tracking-tight">
+                RySwift
+              </h1>
             </div>
-            <button 
+            <button
               onClick={() => setIsOpen(false)}
               className="p-1 hover:bg-gray-100 rounded-md"
             >
@@ -154,20 +187,27 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
             {visibleNavItems.map((item) => {
               const Icon = item.icon;
               const active = isActive(item.href);
-              return (
+              const className = `flex items-center gap-3 h-12 px-4 rounded-lg text-sm font-medium transition-all text-left w-full ${
+                active
+                  ? "bg-purple-50 text-purple-600 font-semibold"
+                  : "text-gray-700 hover:bg-gray-50 active:bg-gray-100"
+              } ${!item.href ? "opacity-60 cursor-not-allowed" : ""}`;
+
+              return item.href ? (
                 <Link
-                  key={item.href}
+                  key={item.label}
                   href={item.href}
                   onClick={() => setIsOpen(false)}
-                  className={`flex items-center gap-3 h-12 px-4 rounded-lg text-sm font-medium transition-all ${
-                    active
-                      ? "bg-purple-50 text-purple-600 font-semibold"
-                      : "text-gray-700 hover:bg-gray-50 active:bg-gray-100"
-                  }`}
+                  className={className}
                 >
                   <Icon className="w-5 h-5 shrink-0" />
                   <span>{item.label}</span>
                 </Link>
+              ) : (
+                <div key={item.label} className={className}>
+                  <Icon className="w-5 h-5 shrink-0" />
+                  <span>{item.label} (Soon)</span>
+                </div>
               );
             })}
           </nav>
@@ -181,20 +221,27 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
               {secondaryNavItems.map((item) => {
                 const Icon = item.icon;
                 const active = isActive(item.href);
-                return (
+                const className = `flex items-center gap-3 h-12 px-4 rounded-lg text-sm font-medium transition-all text-left w-full ${
+                  active
+                    ? "bg-purple-50 text-purple-600 font-semibold"
+                    : "text-gray-700 hover:bg-gray-50 active:bg-gray-100"
+                }`;
+
+                return item.href ? (
                   <Link
-                    key={item.href}
+                    key={item.label}
                     href={item.href}
                     onClick={() => setIsOpen(false)}
-                    className={`flex items-center gap-3 h-12 px-4 rounded-lg text-sm font-medium transition-all ${
-                      active
-                        ? "bg-purple-50 text-purple-600 font-semibold"
-                        : "text-gray-700 hover:bg-gray-50 active:bg-gray-100"
-                    }`}
+                    className={className}
                   >
                     <Icon className="w-5 h-5 shrink-0" />
                     <span>{item.label}</span>
                   </Link>
+                ) : (
+                  <div key={item.label} className={className}>
+                    <Icon className="w-5 h-5 shrink-0" />
+                    <span>{item.label}</span>
+                  </div>
                 );
               })}
             </nav>
@@ -207,7 +254,9 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">
               Logged in
             </p>
-            <p className="text-sm font-semibold text-gray-800 truncate">{user?.name}</p>
+            <p className="text-sm font-semibold text-gray-800 truncate">
+              {user?.name}
+            </p>
             <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
           </div>
         </div>
@@ -229,7 +278,11 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
               height={32}
               className="shrink-0"
             />
-            {!isCollapsed && <h1 className="font-bold text-purple-600 text-xl tracking-tight">RySwift</h1>}
+            {!isCollapsed && (
+              <h1 className="font-bold text-purple-600 text-xl tracking-tight">
+                RySwift
+              </h1>
+            )}
           </div>
 
           <button
@@ -238,7 +291,11 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
               isCollapsed ? "ml-auto" : ""
             }`}
           >
-            {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+            {isCollapsed ? (
+              <ChevronRight className="w-4 h-4" />
+            ) : (
+              <ChevronLeft className="w-4 h-4" />
+            )}
           </button>
         </div>
 
@@ -249,22 +306,31 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
             {visibleNavItems.map((item) => {
               const Icon = item.icon;
               const active = isActive(item.href);
-              return (
+              const className = `flex items-center rounded-lg transition-all text-sm font-medium h-11 select-none text-left w-full ${
+                isCollapsed ? "justify-center px-0" : "px-4 gap-3"
+              } ${
+                active
+                  ? "bg-purple-50 text-purple-600 font-semibold"
+                  : "text-gray-700 hover:bg-gray-50 active:bg-gray-100"
+              } ${!item.href ? "opacity-60 cursor-not-allowed" : ""}`;
+
+              const titleText = isCollapsed ? item.label : undefined;
+
+              return item.href ? (
                 <Link
-                  key={item.href}
+                  key={item.label}
                   href={item.href}
-                  className={`flex items-center rounded-lg transition-all text-sm font-medium h-11 select-none ${
-                    isCollapsed ? "justify-center px-0" : "px-4 gap-3"
-                  } ${
-                    active
-                      ? "bg-purple-50 text-purple-600 font-semibold"
-                      : "text-gray-700 hover:bg-gray-50 active:bg-gray-100"
-                  }`}
-                  title={isCollapsed ? item.label : undefined}
+                  className={className}
+                  title={titleText}
                 >
                   <Icon className="w-5 h-5 shrink-0" />
                   {!isCollapsed && <span>{item.label}</span>}
                 </Link>
+              ) : (
+                <div key={item.label} className={className} title={titleText}>
+                  <Icon className="w-5 h-5 shrink-0" />
+                  {!isCollapsed && <span>{item.label}</span>}
+                </div>
               );
             })}
           </nav>
@@ -278,27 +344,36 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
             ) : (
               <hr className="my-4 border-gray-100" />
             )}
-            
+
             <nav className="space-y-1">
               {secondaryNavItems.map((item) => {
                 const Icon = item.icon;
                 const active = isActive(item.href);
-                return (
+                const className = `flex items-center rounded-lg transition-all text-sm font-medium h-11 select-none text-left w-full ${
+                  isCollapsed ? "justify-center px-0" : "px-4 gap-3"
+                } ${
+                  active
+                    ? "bg-purple-50 text-purple-600 font-semibold"
+                    : "text-gray-700 hover:bg-gray-50 active:bg-gray-100"
+                }`;
+
+                const titleText = isCollapsed ? item.label : undefined;
+
+                return item.href ? (
                   <Link
-                    key={item.href}
+                    key={item.label}
                     href={item.href}
-                    className={`flex items-center rounded-lg transition-all text-sm font-medium h-11 select-none ${
-                      isCollapsed ? "justify-center px-0" : "px-4 gap-3"
-                    } ${
-                      active
-                        ? "bg-purple-50 text-purple-600 font-semibold"
-                        : "text-gray-700 hover:bg-gray-50 active:bg-gray-100"
-                    }`}
-                    title={isCollapsed ? item.label : undefined}
+                    className={className}
+                    title={titleText}
                   >
                     <Icon className="w-5 h-5 shrink-0" />
                     {!isCollapsed && <span>{item.label}</span>}
                   </Link>
+                ) : (
+                  <div key={item.label} className={className} title={titleText}>
+                    <Icon className="w-5 h-5 shrink-0" />
+                    {!isCollapsed && <span>{item.label}</span>}
+                  </div>
                 );
               })}
             </nav>
@@ -309,7 +384,9 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
         <div className="p-4 border-t border-gray-100 bg-white shrink-0">
           <div
             className={`bg-gray-50 rounded-xl transition-all ${
-              isCollapsed ? "p-2 text-center flex items-center justify-center min-h-10" : "p-3"
+              isCollapsed
+                ? "p-2 text-center flex items-center justify-center min-h-10"
+                : "p-3"
             }`}
           >
             {isCollapsed ? (
@@ -321,7 +398,9 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">
                   Logged in
                 </p>
-                <p className="text-sm font-semibold text-gray-800 truncate">{user?.name}</p>
+                <p className="text-sm font-semibold text-gray-800 truncate">
+                  {user?.name}
+                </p>
                 <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
               </>
             )}
