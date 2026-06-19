@@ -148,15 +148,33 @@ function startSimulator() {
         // Target only the first 3 items
         const chosenIds = deliveryIds.slice(0, 3);
 
+        /**
+         * Randomly selects between 1–3 delivery IDs from the dataset fit the implies to that
+         */
+        // const chosenIds = Array.from(
+        //     { length: Math.floor(Math.random() * 3) + 1 },
+        //     () => deliveryIds[Math.floor(Math.random() * deliveryIds.length)]
+        // );
+
+        // Prevents logically inconsistent transitions logic like "delivered → in_transit".
+        const transitions: Record<Delivery['status'], Delivery['status'][]> = {
+            scheduled: ['pending', 'in_transit'],
+            pending: ['in_transit'],
+            in_transit: ['delivered', 'exception'],
+            delivered: ['delivered'],
+            exception: ['in_transit']
+        };
+
         chosenIds.forEach((id) => {
             const delivery = deliveryStore.get(id);
             if (!delivery) return;
 
-            // Pick a completely random status from your array
-            const randomStatus = STATUSES[Math.floor(Math.random() * STATUSES.length)];
+            const possibleNextStates = transitions[delivery.status];
+            const randomStatus =
+                possibleNextStates[Math.floor(Math.random() * possibleNextStates.length)];
 
-            // Assign a matching progress number based on that random status
             let randomProgress = Math.floor(Math.random() * 90) + 1;
+
             if (randomStatus === 'delivered') randomProgress = 100;
             if (randomStatus === 'scheduled') randomProgress = 0;
 
