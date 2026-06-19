@@ -24,6 +24,7 @@ interface DeliveriesTableProps {
   setSearchQuery: (query: string) => void;
   statusFilter: string;
   setStatusFilter: (status: string) => void;
+  pageSize?: number;
 }
 
 export function DeliveriesTable({
@@ -38,30 +39,44 @@ export function DeliveriesTable({
   setSearchQuery,
   statusFilter,
   setStatusFilter,
+  pageSize = 50,
 }: DeliveriesTableProps) {
   const { user } = useAuthStore();
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "delivered": return "bg-green-100 text-green-800";
-      case "in_transit": return "bg-blue-100 text-blue-800";
-      case "scheduled": return "bg-yellow-100 text-yellow-800";
-      case "exception": return "bg-red-100 text-red-800";
-      case "pending": return "bg-orange-100 text-orange-800";
-      default: return "bg-gray-100 text-gray-800";
+      case "delivered":
+        return "bg-green-100 text-green-800";
+      case "in_transit":
+        return "bg-blue-100 text-blue-800";
+      case "scheduled":
+        return "bg-yellow-100 text-yellow-800";
+      case "exception":
+        return "bg-red-100 text-red-800";
+      case "pending":
+        return "bg-orange-100 text-orange-800";
+      default:
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   const formatETA = (etaString: string) => {
     try {
       return new Date(etaString).toLocaleDateString("en-US", {
-        month: "short", day: "numeric", hour: "2-digit", minute: "2-digit",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
       });
-    } catch { return etaString; }
+    } catch {
+      return etaString;
+    }
   };
 
-  // Switch occurrences of `filteredDeliveries` to `deliveries` in your code!
-  const filteredDeliveries = deliveries; 
+  const filteredDeliveries = deliveries;
+
+  // Calculate the base serial offset (e.g., if page is 2 and size is 50, offset is 50)
+  const serialOffset = (currentPage - 1) * pageSize;
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden">
@@ -73,38 +88,55 @@ export function DeliveriesTable({
           </h2>
 
           {/* Pagination Controls */}
-          <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
-            <Button
-              onClick={() => onPageChange(currentPage - 1)}
-              disabled={currentPage === 1 || isLoading}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-1 text-xs sm:text-sm px-2 sm:px-3 min-h-9"
-            >
-              <ChevronLeft className="w-3 h-3 sm:w-4 sm:h-4" />
-              <span className="hidden sm:inline">Previous</span>
-              <span className="sm:hidden">Prev</span>
-            </Button>
-            <span className="text-xs sm:text-sm text-gray-600 px-2 whitespace-nowrap">
-              {currentPage}/{totalPages}
-            </span>
-            <Button
-              onClick={() => onPageChange(currentPage + 1)}
-              disabled={currentPage === totalPages || isLoading}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-1 text-xs sm:text-sm px-2 sm:px-3 min-h-9"
-            >
-              <span className="hidden sm:inline">Next</span>
-              <span className="sm:hidden">Next</span>
-              <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
-            </Button>
+          <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+            {/* Range Indicator */}
+            {filteredDeliveries.length > 0 && (
+              <span className="text-xs text-gray-500 font-medium sm:mr-2">
+                Showing{" "}
+                <span className="font-semibold text-gray-950">
+                  {(currentPage - 1) * pageSize + 1}
+                </span>
+                –
+                <span className="font-semibold text-gray-950">
+                  {(currentPage - 1) * pageSize + filteredDeliveries.length}
+                </span>
+              </span>
+            )}
+
+            <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+              <Button
+                onClick={() => onPageChange(currentPage - 1)}
+                disabled={currentPage === 1 || isLoading}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-1 text-xs sm:text-sm px-2 sm:px-3 min-h-9"
+              >
+                <ChevronLeft className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">Previous</span>
+                <span className="sm:hidden">Prev</span>
+              </Button>
+
+              <span className="text-xs sm:text-sm text-gray-600 px-2 whitespace-nowrap bg-gray-50 border border-gray-200 py-1.5 rounded-md font-medium">
+                {currentPage} / {totalPages}
+              </span>
+
+              <Button
+                onClick={() => onPageChange(currentPage + 1)}
+                disabled={currentPage === totalPages || isLoading}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-1 text-xs sm:text-sm px-2 sm:px-3 min-h-9"
+              >
+                <span className="hidden sm:inline">Next</span>
+                <span className="sm:hidden">Next</span>
+                <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
+              </Button>
+            </div>
           </div>
         </div>
 
         {/* Dynamic Search & Filter Controls */}
         <div className="flex flex-col md:flex-row items-stretch gap-3">
-          {/* Search Input Box */}
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
             <input
@@ -116,7 +148,6 @@ export function DeliveriesTable({
             />
           </div>
 
-          {/* Status Dropdown Trigger Selection */}
           <div className="relative w-full md:w-56">
             <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
             <select
@@ -142,6 +173,9 @@ export function DeliveriesTable({
         <table className="w-full">
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-16">
+                S.No
+              </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                 Delivery ID
               </th>
@@ -165,7 +199,7 @@ export function DeliveriesTable({
           <tbody className="divide-y divide-gray-200">
             {isLoading ? (
               <tr>
-                <td colSpan={6} className="px-6 py-8 text-center">
+                <td colSpan={7} className="px-6 py-8 text-center">
                   <div className="flex items-center justify-center gap-2">
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-600"></div>
                     <span className="text-gray-600">Loading...</span>
@@ -175,14 +209,14 @@ export function DeliveriesTable({
             ) : filteredDeliveries.length === 0 ? (
               <tr>
                 <td
-                  colSpan={6}
+                  colSpan={7}
                   className="px-6 py-8 text-center text-gray-500 font-medium"
                 >
                   No matching shipments found
                 </td>
               </tr>
             ) : (
-              filteredDeliveries.map((delivery) => (
+              filteredDeliveries.map((delivery, index) => (
                 <tr
                   key={delivery.id}
                   className={`hover:bg-gray-50/50 transition-colors ${
@@ -191,6 +225,9 @@ export function DeliveriesTable({
                       : ""
                   }`}
                 >
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-400 font-mono">
+                    {serialOffset + index + 1}
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-purple-600">
                     #{delivery.trackingNumber}
                   </td>
@@ -259,28 +296,33 @@ export function DeliveriesTable({
           </div>
         ) : (
           <div className="space-y-4 p-3 bg-gray-50/30">
-            {filteredDeliveries.map((delivery) => (
+            {filteredDeliveries.map((delivery, index) => (
               <div
                 key={delivery.id}
                 className={`p-4 rounded-lg border-2 ${
                   delivery.status === "exception"
                     ? "bg-red-50 border-red-500"
                     : "bg-white border-gray-200"
-                } hover:shadow-md transition-shadow`}
+                } hover:shadow-md transition-shadow relative`}
               >
+                {/* Mobile Floating Badge Index Indicator */}
+                <div className="absolute top-4 right-4 text-xs font-mono text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">
+                  #{serialOffset + index + 1}
+                </div>
+
                 <div className="space-y-3">
-                  {/* ID & Status Row */}
                   <div className="flex items-start justify-between gap-2">
                     <div>
                       <p className="text-xs text-gray-500 uppercase font-medium">
                         Delivery ID
                       </p>
                       <p className="text-sm font-semibold text-purple-600">
-                        #{delivery.id}
+                        #{delivery.trackingNumber}
                       </p>
                     </div>
+                    {/* Shifted right status down or gave padding space to dodge the serial index float badge */}
                     <span
-                      className={`px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap ${getStatusColor(
+                      className={`px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap mr-12 ${getStatusColor(
                         delivery.status,
                       )}`}
                     >
@@ -288,7 +330,6 @@ export function DeliveriesTable({
                     </span>
                   </div>
 
-                  {/* Client & Driver Info */}
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <p className="text-xs text-gray-500 uppercase font-medium">
@@ -306,7 +347,6 @@ export function DeliveriesTable({
                     </div>
                   </div>
 
-                  {/* ETA Info */}
                   <div>
                     <p className="text-xs text-gray-500 uppercase font-medium">
                       ETA
@@ -316,7 +356,6 @@ export function DeliveriesTable({
                     </p>
                   </div>
 
-                  {/* Mobile Actions Bound Box */}
                   <div className="flex gap-3 pt-2">
                     <Button
                       onClick={() => onViewDetails(delivery)}
